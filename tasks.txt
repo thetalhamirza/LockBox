@@ -1,0 +1,22 @@
+1. Add Password
+            Take a string pass from user along with a string url/email, store the encrypted form of the Password in a text file
+
+2. User Authentication
+            Take a username and master password from user to allow program use and accession of passwords,
+            store these in encrypted format
+
+3. Password Retrieval
+            Ask the user for the master password, if correct then output the password by decrypting from file
+
+
+4. Password Validation
+            Validate any password that is added. To be valid, a password needs to be of length greater than or equal to 8.
+            If not following any one of the following conditions, just give the user a warning and if the user continues with it, validate that password.
+                *have at least 1 uppercase char
+                *have at least 1 lowercase char
+                *have at least 1 numeric char
+                *cannot contain spaces
+                    (subject to change)
+
+5. Backup on exit
+
