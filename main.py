@@ -1,4 +1,5 @@
 from cryptography.fernet import Fernet, InvalidToken
+from tabulate import tabulate
 import sys
 import pwinput
 
@@ -28,12 +29,14 @@ def initialize_user():
     initializeKeys(user_type)
 
 def print_menu():
-    print("Menu:\n")
-    print("1: Add a new password")
-    print("2: Retrieve a password")
-    print("3: Delete an existing password")
-    print("4: Generate a new password (Code in progress)")
-    print("0: Exit")
+    showTable = [["S.no", 'Menu'], ['1','Add a new password'], ['2','Retrieve a password'], ['3','Delete an existing password'], ['4','Generate a new password (Code in progress)'], ['0', 'Exit']]
+    # print("Menu:\n")
+    print(tabulate(showTable, headers="firstrow", tablefmt="rounded_grid"))
+    # print("1: Add a new password")
+    # print("2: Retrieve a password")
+    # print("3: Delete an existing password")
+    # print("4: Generate a new password (Code in progress)")
+    # print("0: Exit")
     print()
 
 def get_user_choice():
@@ -57,16 +60,17 @@ def execute_choice(choice):
         case 3:
             deletePassword()
         case 4:    
-            print("Generating new password... (Code in progress)")
+            print("Code in progress")
+            main()
         case 0:
             sys.exit('Exiting...')
 
 ###
 
 def addPassword():
-    user = input("Enter a username/email/website: ")
     while True:    
         try:
+            user = input("Enter a username/email/website: ")
             pwd = pwinput.pwinput(prompt="Enter a password to add: ", mask=pwdMask)
             if pwd != '':
                 break
@@ -107,8 +111,9 @@ def retrievePassword():
                         found = True
                 if pwinput.pwinput(prompt="Enter the master password: ", mask=pwdMask) == masterPass and found:
                     print()
-                    print(f"User: {decUser}")
-                    print(f"Password: {decPwd}")
+                    # print(f"User: {decUser}")
+                    # print(f"Password: {decPwd}")
+                    print(tabulate([["User", decUser], ["Password", decPwd]], tablefmt='rounded_grid'))
                     print()
                     break
                 else:
