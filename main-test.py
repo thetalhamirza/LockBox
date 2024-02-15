@@ -1,4 +1,4 @@
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
 import sys
 
 
@@ -25,11 +25,10 @@ def initialize_user():
     initializeKeys(user_type)
 
 def print_menu():
-    print()
     print("Menu:\n")
     print("1: Add a new password")
     print("2: Retrieve a password")
-    print("3: Delete an existing password (Code in progress)")
+    print("3: Delete an existing password")
     print("4: Generate a new password (Code in progress)")
     print("0: Exit")
     print()
@@ -53,7 +52,7 @@ def execute_choice(choice):
         case 2: 
             retrievePassword()
         case 3:
-            print("Deleting password... (Code in progress)")
+            deletePassword()
         case 4:    
             print("Generating new password... (Code in progress)")
         case 0:
@@ -71,6 +70,7 @@ def addPassword():
             else:
                 print("Password cannot be blank. Press Ctrl-c to go to main menu")
         except KeyboardInterrupt:
+            print()
             main()    
     if validation(pwd):
         encrypted_user = encrypt(user).decode('utf8')
@@ -84,34 +84,81 @@ def addPassword():
 def retrievePassword():
     global masterPass
     lines = []
-    with open(pfile, 'r') as f:
-        for line in f:
-            lines.append(line)
-    if len(lines) > 0:
-        userchoice = input("Enter the username/email/website you need the password for: ")
-        found = False
-        try:
-            for current in lines:
-                user, pwd = current.replace('\n','').split('|,|')
-                decUser= fernet.decrypt(user).decode('utf8')
-                if decUser == userchoice:
-                    decPwd= fernet.decrypt(pwd).decode('utf8')
-                    if input("Enter the master password: ") == masterPass:
-                        print()
-                        print(f"User: {decUser}")
-                        print(f"Password: {decPwd}")
-                        print()
+    while True:
+        with open(pfile, 'r') as f:
+            for line in f:
+                lines.append(line)
+        if len(lines) > 0:
+            try:
+                userchoice = input("Enter the username/email/website you need the password for: ")
+            except KeyboardInterrupt:
+                print()
+                main()
+            found = False
+            try:
+                for current in lines:
+                    user, pwd = current.replace('\n','').split('|,|')
+                    decUser= fernet.decrypt(user).decode('utf8')
+                    if decUser == userchoice:
+                        decPwd= fernet.decrypt(pwd).decode('utf8')
                         found = True
-                        break
-        except fernet.InvalidToken:
-            print("Fernet Token Error. Code needs debugging")
+                if input("Enter the master password: ") == masterPass and found:
+                    print()
+                    print(f"User: {decUser}")
+                    print(f"Password: {decPwd}")
+                    print()
+                    break
+                else:
+                    print("\nUsername not found, or the master password is incorrect.\n")
+                    break
+            except InvalidToken:
+                print("Fernet Token Error. Code needs debugging")
 
+        else:
+            print("\nNo credentials currently stored.\n")
+            main()
 
-        if not found: print("\nUsername not found\n")
-    else:
-        print("\nNo credentials currently stored.\n")
     main()
 
+def deletePassword():
+    global pfile
+    global masterPass
+    lines = []
+    with open(pfile, 'r') as f:
+        lines = f.readlines()
+
+    if len(lines) > 0:
+        try:
+            choice = input("Enter the username/email/website you want to delete the password for: ")
+            if input("Enter the master password: ") != masterPass:
+                print("\nUsername not found, or the master password is incorrect.\n")
+                main()
+        except KeyboardInterrupt:
+            print()
+            main()
+        found = False
+        newLines = []
+        for current in lines:
+            user, pwd = current.replace('\n','').split('|,|')
+            decUser= fernet.decrypt(user).decode('utf8')
+            if decUser != choice:
+                newLines.append(current)
+            else:
+                found = True
+                if input("Are you sure you want to delete this username and password? (y,n): ") != 'y':
+                    print("Aborting...")
+                    main()
+    
+        if found:
+            with open(pfile, 'w') as f:
+                for line in newLines:
+                    f.write(line)
+                print("Password deleted successfully.\n")
+        else:
+            print(f"\nUsername not found, or the master password is incorrect.\n")
+    else:
+        print("\nNo credentials currently stored.\n")
+    main()    
 
 
 def encrypt(password):
