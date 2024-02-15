@@ -1,11 +1,14 @@
 from cryptography.fernet import Fernet, InvalidToken
 import sys
+import pwinput
 
 
 global auth
+global pwdMask
 pfile = "passwords.txt"
 keydata = "keydata.txt"
 auth = False
+pwdMask = '*'
 
 ###
 
@@ -64,7 +67,7 @@ def addPassword():
     user = input("Enter a username/email/website: ")
     while True:    
         try:
-            pwd = input("Enter a password to add: ")
+            pwd = pwinput.pwinput(prompt="Enter a password to add: ", mask=pwdMask)
             if pwd != '':
                 break
             else:
@@ -102,7 +105,7 @@ def retrievePassword():
                     if decUser == userchoice:
                         decPwd= fernet.decrypt(pwd).decode('utf8')
                         found = True
-                if input("Enter the master password: ") == masterPass and found:
+                if pwinput.pwinput(prompt="Enter the master password: ", mask=pwdMask) == masterPass and found:
                     print()
                     print(f"User: {decUser}")
                     print(f"Password: {decPwd}")
@@ -130,7 +133,7 @@ def deletePassword():
     if len(lines) > 0:
         try:
             choice = input("Enter the username/email/website you want to delete the password for: ")
-            if input("Enter the master password: ") != masterPass:
+            if pwinput.pwinput(prompt="Enter the master password: ", mask=pwdMask) != masterPass:
                 print("\nUsername not found, or the master password is incorrect.\n")
                 main()
         except KeyboardInterrupt:
@@ -145,7 +148,7 @@ def deletePassword():
                 newLines.append(current)
             else:
                 found = True
-                if input("Are you sure you want to delete this username and password? (y,n): ") != 'y':
+                if input("Are you sure you want to delete this username and password? (y,n): ").lower() != 'y':
                     print("Aborting...")
                     main()
     
@@ -182,7 +185,7 @@ def authorize():
     if len(lines) == 1:
         print("Let's create your account")
         newUser = input("Enter a new username: ")
-        newPass = input("Enter a new password: ")
+        newPass = pwinput.pwinput(prompt="Enter a new password: ", mask=pwdMask)
         masterPass = newPass
         encUser = masterFernet.encrypt(newUser.encode())
         encPass = masterFernet.encrypt(newPass.encode())
@@ -199,7 +202,7 @@ def authorize():
         except ValueError:
             sys.exit("error: check keydata file")
         user = input("Enter a username: ")
-        masterPass = input("Enter a password: ")
+        masterPass = pwinput.pwinput(prompt="Enter a password: ", mask=pwdMask)
         if user == decUser:
             if masterPass == decPwd:                  
                 print("\nAuthorised\n")
@@ -253,10 +256,10 @@ def validation(password):
         return True
     else:
         while True:
-            inChoice = input("Warning: Password is not secure. Continue? (Y/N): ")
-            if inChoice == "Y":
+            inChoice = input("Warning: Password is not secure. Continue? (y/n): ").lower()
+            if inChoice == "y":
                 return True
-            elif inChoice == "N":
+            else:
                 break
     # return True
 
