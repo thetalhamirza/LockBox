@@ -43,6 +43,8 @@ def get_user_choice():
             return choice
         except ValueError as e:
             pass
+        except KeyboardInterrupt:
+            sys.exit("\nExiting...")
 
 def execute_choice(choice):
     match choice:
@@ -67,8 +69,8 @@ def addPassword():
             if pwd != '':
                 break
             else:
-                print("Password cannot be blank. Press Ctrl-d to go to main menu")
-        except EOFError:
+                print("Password cannot be blank. Press Ctrl-c to go to main menu")
+        except KeyboardInterrupt:
             main()    
     if validation(pwd):
         encrypted_user = encrypt(user).decode('utf8')
@@ -190,10 +192,6 @@ def initMasterKey():
         masterFernet = Fernet(masterKey)
         with open(keydata, 'a') as f:
             f.write(f"masterKey: {masterKey}\n")
-        
-
-
-
 
 def validation(password):
     if len(password) < 8:
