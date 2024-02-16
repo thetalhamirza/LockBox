@@ -2,6 +2,10 @@ from cryptography.fernet import Fernet, InvalidToken
 from tabulate import tabulate
 import sys
 import pwinput
+import secrets
+import string
+import random
+import pyperclip
 
 
 global auth
@@ -63,7 +67,7 @@ def executeChoice(choice):
             deletePassword()
         case 4:    
             echo("Code in progress")
-            main()
+            generatePassword()
         case 0:
             print()
             sys.exit('Exiting...')
@@ -178,6 +182,85 @@ def deletePassword():
         # print("\nNo credentials currently stored.\n")
         echo("No credentials currently stored.")
     main()    
+
+def generatePassword():
+    while True:
+        try:
+            passLen = input("Please specify the length of your password, (to choose at random, type r): ")
+            if passLen.lower() in ['','r']:
+                passLen = random.randint(10, 18)
+                break
+            elif passLen == '':
+                pass
+            else:
+                passLen = int(passLen)
+                if passLen < 8:
+                    echo("Warning: Password should be at least 8 characters long")
+                else:
+                    break
+        except KeyboardInterrupt:
+            print()
+            main()
+
+    alphabet = ''
+    try:
+        genChoice = input("Press Enter to select all types of characters, or type C for a customized output: ").lower()
+    except KeyboardInterrupt:
+        print()
+        main()
+
+    if genChoice == '':
+        allFlag = True
+
+    if not allFlag:
+        if input('Include Lowercase Character? (y,n): ').lower() in ['','y']:
+            alphabet += string.ascii_lowercase
+        if input('Include Uppercase Character? (y,n): ').lower() in ['','y']:
+            alphabet += string.ascii_uppercase
+        if input('Include Digits? (y,n): ').lower() in ['','y']:
+            alphabet += string.digits
+        if input('Include Special Characters? (y,n): ').lower() in ['','y']:
+            alphabet += string.punctuation
+        if not alphabet:
+            echo("No character set selected.")
+            main()
+    else:
+            alphabet += string.ascii_lowercase
+            alphabet += string.ascii_uppercase
+            alphabet += string.digits
+            alphabet += string.punctuation
+            print("\nAll character sets selected.\n")
+
+
+    while True:
+        password = ''
+        for _ in range(passLen):
+            password += ''.join(secrets.choice(alphabet))
+        echo(f"Password: {password}")
+        try:
+            if input('\nChoose this one? (y/n): ').lower() == 'y':
+                try:
+                    pyperclip.copy(password)
+                    print("Copied!")
+                except:
+                    print("\nCouldn't copy to clipboard\n")   
+                    
+                break
+            else:
+                passLen = random.randint(10,18)
+        except KeyboardInterrupt:
+            print()
+            main()
+    main()
+
+
+
+
+
+
+
+
+
 
 
 def encrypt(password):
