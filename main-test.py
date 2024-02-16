@@ -35,7 +35,7 @@ def initializeUser():
     initializeKeys(user_type)
 
 def printMenu():
-    showTable = [["S.no", 'Menu'], ['1','Add a new password'], ['2','Retrieve a password'], ['3','Delete an existing password'], ['4','Generate a new password'], ['0', 'Exit']]
+    showTable = [["S.no", 'Menu'], ['1','Add a new password'], ['2','Retrieve a password'], ['3','Delete an existing password'], ['4','View all stored usernames'], ['5','Generate a new password'], ['0', 'Exit']]
     print(tabulate(showTable, headers="firstrow", tablefmt="rounded_grid"))
     print()
 
@@ -43,7 +43,7 @@ def getUserChoice():
     while True:
         try:
             choice = int(input("Enter your choice: "))
-            if choice not in [0, 1, 2, 3, 4]:
+            if choice not in [0, 1, 2, 3, 4, 5]:
                 raise ValueError("Invalid choice. Please enter a number from the menu.")
             return choice
         except ValueError as e:
@@ -59,7 +59,10 @@ def executeChoice(choice):
             retrievePassword()
         case 3:
             deletePassword()
-        case 4:    
+        case 4:
+            echo("In development")
+            getAllUsers()
+        case 5:    
             generatePassword()
         case 0:
             print()
@@ -170,6 +173,24 @@ def deletePassword():
         echo("No credentials currently stored.")
     main()    
 
+def getAllUsers():
+    global masterPass
+    lines = []
+    outer = [['Username', 'Password']]
+    with open(pfile, 'r') as f:
+        for line in f:
+            lines.append(line)
+    if len(lines) < 0:
+        echo("No credentials currently stored.")
+    else:
+        for current in lines:
+            user, pwd = current.replace('\n','').split('|,|')
+            decUser= fernet.decrypt(user).decode('utf8')
+            outer.append([decUser,pwdMask*8])
+    print(tabulate(outer, tablefmt='rounded_grid', headers='firstrow'))       
+    main() 
+
+
 def generatePassword():
     while True:
         try:
@@ -252,16 +273,6 @@ def generatePassword():
             print()
             main()
     main()
-
-
-
-
-
-
-
-
-
-
 
 def encrypt(password):
     cipher = fernet.encrypt(password.encode())
