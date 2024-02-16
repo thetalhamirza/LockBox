@@ -42,3 +42,7 @@ Fork the repository and submit a pull request to do your part.
 
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgements
+- Thanks to the cryptography library for providing the encryption functionality.
+- Thanks to the pwinput library for providing password input functionality.
