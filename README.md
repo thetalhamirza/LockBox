@@ -1,6 +1,6 @@
 # LockBox
 
-LockBox is a command-line password manager built with Python. It allows you to securely store and manage your passwords.
+LockBox is a command-line password manager built with Python. It is my final project for CS50p, and allows you to securely store and manage your passwords.
 
 ## Features
 
@@ -23,6 +23,7 @@ LockBox is a command-line password manager built with Python. It allows you to s
 ```sh
   python main.py
 ```
+
 
 ## Usage
 - To add a new password, choose option 1 from the menu and follow the prompts.
