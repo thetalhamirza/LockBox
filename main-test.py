@@ -35,14 +35,8 @@ def initializeUser():
     initializeKeys(user_type)
 
 def printMenu():
-    showTable = [["S.no", 'Menu'], ['1','Add a new password'], ['2','Retrieve a password'], ['3','Delete an existing password'], ['4','Generate a new password (Code in progress)'], ['0', 'Exit']]
-    # print("Menu:\n")
+    showTable = [["S.no", 'Menu'], ['1','Add a new password'], ['2','Retrieve a password'], ['3','Delete an existing password'], ['4','Generate a new password'], ['0', 'Exit']]
     print(tabulate(showTable, headers="firstrow", tablefmt="rounded_grid"))
-    # print("1: Add a new password")
-    # print("2: Retrieve a password")
-    # print("3: Delete an existing password")
-    # print("4: Generate a new password (Code in progress)")
-    # print("0: Exit")
     print()
 
 def getUserChoice():
@@ -66,7 +60,6 @@ def executeChoice(choice):
         case 3:
             deletePassword()
         case 4:    
-            echo("Code in progress")
             generatePassword()
         case 0:
             print()
@@ -77,15 +70,15 @@ def echo(msg):
 
 ###
 
-def addPassword():
+def addPassword(pwd=None):
     while True:    
         try:
             user = input("Enter a username/email/website: ")
-            pwd = pwinput.pwinput(prompt="Enter a password to add: ", mask=pwdMask)
+            if pwd == None:
+                pwd = pwinput.pwinput(prompt="Enter a password to add: ", mask=pwdMask)
             if pwd != '':
                 break
             else:
-                # print("Password cannot be blank. Press Ctrl-c to go to main menu")
                 echo("Password cannot be blank. Press Ctrl-c to go to main menu")
         except KeyboardInterrupt:
             print()
@@ -95,8 +88,7 @@ def addPassword():
         encrypted_pwd = encrypt(pwd).decode('utf8')
         with open(pfile, 'a') as f:
             f.write(f"{encrypted_user}|,|{encrypted_pwd}\n")
-        # print("\nAdded!\n")
-        echo("Added!")
+        echo("Saved!")
     main()
 
 
@@ -123,8 +115,6 @@ def retrievePassword():
                         found = True
                 if pwinput.pwinput(prompt="Enter the master password: ", mask=pwdMask) == masterPass and found:
                     print()
-                    # print(f"User: {decUser}")
-                    # print(f"Password: {decPwd}")
                     print(tabulate([["User", decUser], ["Password", decPwd]], tablefmt='rounded_grid'))
                     print()
                     break
@@ -135,7 +125,6 @@ def retrievePassword():
                 print("Fernet Token Error. Code needs debugging")
 
         else:
-            # print("\nNo credentials currently stored.\n")
             echo("No credentials currently stored.")
             main()
 
@@ -174,21 +163,22 @@ def deletePassword():
             with open(pfile, 'w') as f:
                 for line in newLines:
                     f.write(line)
-                # print("Password deleted successfully.\n")
                 echo("Password deleted successfully")
         else:
             print(f"\nUsername not found, or the master password is incorrect.\n")
     else:
-        # print("\nNo credentials currently stored.\n")
         echo("No credentials currently stored.")
     main()    
 
 def generatePassword():
     while True:
         try:
+            print()
+            randFlag = False
             passLen = input("Please specify the length of your password, (to choose at random, type r): ")
             if passLen.lower() in ['','r']:
                 passLen = random.randint(10, 18)
+                randFlag = True
                 break
             elif passLen == '':
                 pass
@@ -204,6 +194,7 @@ def generatePassword():
 
     alphabet = ''
     try:
+        print()
         genChoice = input("Press Enter to select all types of characters, or type C for a customized output: ").lower()
     except KeyboardInterrupt:
         print()
@@ -211,14 +202,20 @@ def generatePassword():
 
     if genChoice == '':
         allFlag = True
+    else:
+        allFlag = False
 
     if not allFlag:
+        print()
         if input('Include Lowercase Character? (y,n): ').lower() in ['','y']:
             alphabet += string.ascii_lowercase
+        print()
         if input('Include Uppercase Character? (y,n): ').lower() in ['','y']:
             alphabet += string.ascii_uppercase
+        print()
         if input('Include Digits? (y,n): ').lower() in ['','y']:
             alphabet += string.digits
+        print()
         if input('Include Special Characters? (y,n): ').lower() in ['','y']:
             alphabet += string.punctuation
         if not alphabet:
@@ -229,7 +226,7 @@ def generatePassword():
             alphabet += string.ascii_uppercase
             alphabet += string.digits
             alphabet += string.punctuation
-            print("\nAll character sets selected.\n")
+            echo("All character sets selected.")
 
 
     while True:
@@ -241,13 +238,16 @@ def generatePassword():
             if input('\nChoose this one? (y/n): ').lower() == 'y':
                 try:
                     pyperclip.copy(password)
-                    print("Copied!")
+                    echo("Copied to clipboard")
                 except:
-                    print("\nCouldn't copy to clipboard\n")   
-                    
+                    echo("Couldn't copy to clipboard :(")   
+                print()
+                if input("Do you want to save this password? (y/n): ").lower() in ['','y']:
+                    addPassword(pwd=password)
+
                 break
             else:
-                passLen = random.randint(10,18)
+                if randFlag: passLen = random.randint(10,18)
         except KeyboardInterrupt:
             print()
             main()
