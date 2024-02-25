@@ -113,6 +113,7 @@ def retrievePassword():
                     if decUser == userchoice:
                         decPwd= fernet.decrypt(pwd).decode('utf8')
                         found = True
+                        break
                 if pwinput.pwinput(prompt="Enter the master password: ", mask=pwdMask) == masterPass and found:
                     print()
                     print(tabulate([["User", decUser], ["Password", decPwd]], tablefmt='rounded_grid'))
