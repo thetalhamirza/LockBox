@@ -21,7 +21,7 @@ LockBox is a command-line password manager built with Python. It allows you to s
 ```
 3. Run the program
 ```sh
-  python main.py
+  python lockbox.py
 ```
 
 

@@ -64,6 +64,8 @@ def executeChoice(choice):
         case 0:
             print()
             sys.exit('Exiting...')
+        case _:
+            raise ValueError
 
 def echo(msg):
     print(tabulate([[msg]], tablefmt=msgFmt))

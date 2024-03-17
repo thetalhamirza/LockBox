@@ -1,19 +1,44 @@
-import secrets
-import string
-import random
+# import secrets
+# import string
+# import random
+import sys
 
-letters = string.ascii_letters
 
-digits = string.digits
+# letters = string.ascii_letters
 
-special_chars = string.punctuation
+# digits = string.digits
 
-selection_list = letters + digits + special_chars
+# special_chars = string.punctuation
 
-password_len = 10
+# selection_list = letters + digits + special_chars
 
-password = ''
-for i in range(password_len):
-    password += ''.join(secrets.choice(selection_list))
+# password_len = 10
 
-print(password)
+# password = ''
+# for i in range(password_len):
+#     password += ''.join(secrets.choice(selection_list))
+
+# print(password)
+
+
+def executeChoice(choice):
+    match choice:
+        case 1: 
+            # addPassword()
+            print('a')
+        case 2: 
+            # retrievePassword()
+            print('a')
+        case 3:
+            # deletePassword()
+            print('a')
+        case 4:    
+            # generatePassword()
+            print('a')
+        case 0:
+            print()
+            sys.exit('Exiting...')
+        case _:
+            raise ValueError
+
+executeChoice(66)
